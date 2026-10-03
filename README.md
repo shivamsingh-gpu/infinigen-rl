@@ -1,4 +1,4 @@
-# indoor-rl-pipeline
+# infinigen-rl
 
 Reinforcement-learning pipeline that teaches a **Qwen3.5-2B** language model to turn a
 plain-English room description into a valid **Infinigen** 3D interior-layout schema, trained
@@ -81,7 +81,7 @@ data_parquet    -> ...
 ## Quickstart
 
 ```bash
-cd indoor-rl-pipeline
+cd infinigen-rl
 source config/paths.env           # 1. point paths at your verl + infinigen checkouts
 #   (one-time) apply the 3 infinigen core edits — see docs/INFINIGEN_PATCHES.md
 
