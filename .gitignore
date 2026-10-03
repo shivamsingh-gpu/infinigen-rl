@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.log
+*.out
+sample_renders/
+tb/
+tb_samples/
+ckpts/
+*.parquet
