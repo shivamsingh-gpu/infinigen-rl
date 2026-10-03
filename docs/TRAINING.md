@@ -1,8 +1,15 @@
 # Training
 
 GRPO on Qwen3.5-2B via verl (FSDP2 + vLLM rollout). Driver: `launch/run_grpo_fsdp.sh`
-(despite its historical name it defaults the reward to `reward_indoor.py` and works for all rooms).
+(it defaults the reward to the repo's `src/reward_indoor.py` and works for all rooms).
 Durable wrapper: `launch/train.sbatch` (forwards `"$@"` so you can append hydra overrides).
+
+**Where the actual training algorithm is:** `launch/run_grpo_fsdp.sh` sets all the knobs and then
+calls `python -m verl.trainer.main_ppo` — the GRPO loop itself. That module is **vendored** in this
+repo at `external/verl/verl/trainer/main_ppo.py` (pinned, unmodified; see `external/verl/VENDORED.md`).
+`config/paths.env` puts `$VERL_SRC` (= `external/verl`) first on `PYTHONPATH`, so the in-repo copy is
+used — not any external verl checkout. Third-party deps (torch/ray/vllm) still come from `$VENV`.
+Outputs (ckpts/logs/tb) default to `$REPO_ROOT/runs/` (override via `BATH_HOME`/`CKPTS_DIR`/`TB_DIR`).
 
 ## What one step is
 - `train_batch_size=16` prompts/step, `rollout.n=8` samples/prompt → **128 generations/step**.

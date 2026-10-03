@@ -8,10 +8,16 @@
 #   - shorter response length (schemas are small JSON)
 set -xeuo pipefail
 
+########################### repo paths + vendored verl ###########################
+# Resolve VERL_SRC (vendored trainer), REWARD_PATH, VENV, BASE_MODEL, etc. and put
+# the vendored verl first on PYTHONPATH so `-m verl.trainer.main_ppo` uses it.
+_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "${_HERE}/../config/paths.env" ]; then source "${_HERE}/../config/paths.env"; fi
+export PYTHONPATH="${VERL_SRC:-}:${REPO_ROOT:-}/src:${PYTHONPATH:-}"
 ########################### environment fixes (identical to the GSM8K demo) ###########################
-COMPAT_DIR=${COMPAT_DIR:-/nara-efs/marketing/shhsing/verl/demo_qwen35_gsm8k/cuda_compat/usr/local/cuda-13.0/compat}
+COMPAT_DIR=${COMPAT_DIR:-${VERL_ROOT:-/nara-efs/marketing/shhsing/verl}/demo_qwen35_gsm8k/cuda_compat/usr/local/cuda-13.0/compat}
 if [ -d "${COMPAT_DIR}" ]; then export LD_LIBRARY_PATH="${COMPAT_DIR}:${LD_LIBRARY_PATH:-}"; fi
-VENV_BIN=${VENV_BIN:-/nara-efs/marketing/shhsing/verl/.venv/bin}
+VENV_BIN=${VENV_BIN:-${VENV:-/nara-efs/marketing/shhsing/verl/.venv}/bin}
 export PATH="${VENV_BIN}:${PATH}"
 export CUDA_HOME=${CUDA_HOME:-/usr/local/cuda}
 unset ROCR_VISIBLE_DEVICES || true
@@ -31,9 +37,11 @@ GEN_TP=${GEN_TP:-1}
 SP_SIZE=${SP_SIZE:-1}
 ROLLOUT_GPU_MEM_UTIL=${ROLLOUT_GPU_MEM_UTIL:-0.5}
 
-BATH_HOME=${BATH_HOME:-/nara-efs/marketing/shhsing/verl/rl_infinigen_bathroom}
+# output root (ckpts/logs/tb). Defaults to the repo's runs/ dir (standalone);
+# override BATH_HOME to write elsewhere.
+BATH_HOME=${BATH_HOME:-${REPO_ROOT:-/nara-efs/marketing/shhsing/infinigen-rl}/runs}
 # reuse the already-downloaded, proven Qwen3.5-2B checkpoint from the GSM8K demo
-MODEL_PATH=${MODEL_PATH:-/nara-efs/marketing/shhsing/verl/demo_qwen35_gsm8k/models/Qwen3.5-2B}
+MODEL_PATH=${MODEL_PATH:-${BASE_MODEL:-/nara-efs/marketing/shhsing/verl/demo_qwen35_gsm8k/models/Qwen3.5-2B}}
 CKPTS_DIR=${CKPTS_DIR:-"${BATH_HOME}/ckpts/${EXPERIMENT_NAME}"}
 LOG_DIR=${LOG_DIR:-"${BATH_HOME}/logs"}
 TRAIN_FILE=${TRAIN_FILE:-"${BATH_HOME}/data/train.parquet"}
@@ -42,7 +50,7 @@ TEST_FILE=${TEST_FILE:-"${BATH_HOME}/data/val.parquet"}
 # generalized reward: it reads room_type from the GT and dispatches to the
 # per-room ontology (indoor_ontology), so it scores bathroom AND bedroom (and
 # future room types) identically to the old reward_bathroom for bathroom data.
-REWARD_PATH=${REWARD_PATH:-/nara-efs/marketing/shhsing/infinigen/rl_infinigen_beginner/scripts/reward_indoor.py}
+REWARD_PATH=${REWARD_PATH:-${REPO_ROOT:-/nara-efs/marketing/shhsing/infinigen-rl}/src/reward_indoor.py}
 ########################### end user-adjustable ###########################
 
 n_devices_per_node=${NDEVICES_PER_NODE}

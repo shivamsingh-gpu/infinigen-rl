@@ -46,7 +46,7 @@ Infinigen/Blender, and build a TensorBoard image+prompt gallery. See `INFERENCE.
 | Reward | `src/reward_indoor.py` | `compute_score()` — the GRPO reward; dispatches on room_type |
 | Dataset | `src/build_indoor_dataset.py` | GT schemas (+captions) → train/val parquet |
 | Policy | Qwen3.5-2B (`$BASE_MODEL`) | text-in → JSON-out LLM; trained by verl GRPO |
-| Trainer | verl (`$VERL_ROOT`) | GRPO/FSDP2/vLLM; launched via `launch/run_grpo_fsdp.sh` |
+| Trainer | **vendored** `external/verl` (`verl.trainer.main_ppo`) | GRPO/FSDP2/vLLM loop; launched via `launch/run_grpo_fsdp.sh`. Pinned+unmodified (`external/verl/VENDORED.md`); `PYTHONPATH` puts it first so `-m verl.trainer.main_ppo` uses the in-repo copy |
 | Renderer | infinigen (`$INFINIGEN_ROOT`) + `src/render_indoor.py` | compiles a schema → scene → image |
 | RL hook | `patches/infinigen/rl_inject.py` | compiles the JSON schema into Infinigen's constraint DSL (env-gated) |
 

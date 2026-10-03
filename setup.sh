@@ -4,8 +4,12 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 source "$HERE/config/paths.env"
 
-echo "== checking external checkouts =="
-for d in "$VERL_ROOT" "$INFINIGEN_ROOT" "$VENV" "$BASE_MODEL"; do
+echo "== checking vendored trainer =="
+if [ -f "$VERL_SRC/verl/trainer/main_ppo.py" ]; then echo "  OK   vendored verl.trainer.main_ppo ($VERL_SRC)"; else
+  echo "  MISS $VERL_SRC/verl/trainer/main_ppo.py  <-- vendored verl missing"; fi
+
+echo "== checking external deps (weights/venv/renderer) =="
+for d in "$INFINIGEN_ROOT" "$VENV" "$BASE_MODEL"; do
   [ -e "$d" ] && echo "  OK   $d" || echo "  MISS $d  <-- fix config/paths.env"
 done
 

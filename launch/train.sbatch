@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
-# Durable GRPO training job (Qwen3.5-2B / Infinigen bathroom layout).
+# Durable GRPO training job (Qwen3.5-2B / Infinigen indoor layout).
 # Runs as its own batch allocation so it survives interactive-session teardown.
-#SBATCH --job-name=qwen35-grpo-bathroom
-#SBATCH --partition=p5-141-nara-preempt
-#SBATCH --qos=team-nara-preempt
+# Uses the VENDORED verl trainer (external/verl) via config/paths.env.
+#
+#   sbatch launch/train.sbatch                       # defaults
+#   sbatch ... launch/train.sbatch trainer.save_freq=20 trainer.test_freq=20
+# NOTE: #SBATCH --output cannot expand env vars; if you relocate the repo, edit
+#       the literal path below.
+#SBATCH --job-name=qwen35-grpo-indoor
+#SBATCH --partition=p4-80-main
+#SBATCH --qos=batch
 #SBATCH --nodes=1
-#SBATCH --gres=gpu:2
-#SBATCH --cpus-per-task=16
+#SBATCH --gres=gpu:8
+#SBATCH --cpus-per-task=96
 #SBATCH --time=08:00:00
-#SBATCH --output=/nara-efs/marketing/shhsing/verl/rl_infinigen_bathroom/logs/slurm-%j.out
+#SBATCH --output=/nara-efs/marketing/shhsing/infinigen-rl/runs/logs/slurm-%j.out
 
 set -xeuo pipefail
-cd /nara-efs/marketing/shhsing/verl
-bash rl_infinigen_bathroom/run_bathroom_grpo_fsdp.sh "$@"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+source "$HERE/../config/paths.env"
+mkdir -p "$REPO_ROOT/runs/logs"
+cd "$VERL_SRC"                       # cwd holds the vendored verl package
+bash "$HERE/run_grpo_fsdp.sh" "$@"
 echo "SCRIPT_EXIT=$?"

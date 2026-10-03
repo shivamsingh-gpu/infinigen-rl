@@ -5,11 +5,13 @@ plain-English room description into a valid **Infinigen** 3D interior-layout sch
 with **GRPO** (via verl) against a deterministic rule-based reward, and evaluated by rendering
 the generated layouts in Infinigen/Blender.
 
-> This repo is a **self-contained control plane + code snapshot** for the pipeline. The two
-> heavy dependencies — the **verl** trainer and the **infinigen** renderer — remain external
-> checkouts (see `config/paths.env`); everything else (schema, ontology, reward, dataset
-> builder, sampler, dashboards, launchers) lives here. The three small infinigen *core* edits
-> that make the hook work are captured in `patches/` and `docs/INFINIGEN_PATCHES.md`.
+> This repo is **self-contained for training and inference**. The GRPO trainer
+> (`verl.trainer.main_ppo`) is **vendored** at `external/verl/` (pinned, unmodified — see
+> `external/verl/VENDORED.md`), so the actual RL training algorithm ships with the repo.
+> The **infinigen** renderer stays an external checkout (large; see `config/paths.env`), with
+> its three small env-gated core edits captured in `patches/` + `docs/INFINIGEN_PATCHES.md`.
+> Model weights, the venv, and the dataset are environment/artifacts (not code) and are
+> referenced via `config/paths.env`, not vendored.
 
 ---
 
@@ -69,6 +71,8 @@ launch/
   render_samples.sbatch     # batch-job: render generated layouts on an 8-GPU node
   render_gt.sbatch          # batch-job: render/validate the GT schemas
   tensorboard.sh            # launch both dashboards (6007 curves, 6008 gallery)
+external/verl/              # VENDORED verl trainer (pinned, unmodified). `verl.trainer.main_ppo`
+                            # = the actual GRPO loop. VENDORED.md records the upstream commit.
 patches/infinigen/
   rl_inject.py              # the whole RL hook (new file in infinigen) — the heart of the integration
 docs/
