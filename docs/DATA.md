@@ -1,11 +1,13 @@
 # Data
 
-## Sources (symlinked into the repo)
-- `data_gt_schemas/<room>/*.json` — the GT `IndoorConfig` schemas (191 total across 5 rooms),
-  authored by `src/author_gt_schemas.py`. Captions live alongside under `captions/`.
-- `data_references/ext_indoor_<suffix>/*.png` — the reference photos (suffix: `bath`, `bedroom`,
+## Sources (not shipped in this repo)
+No data is committed to the repo. The data lives in / is written to:
+- `$SCAFFOLD/gt_schemas/<room>/*.json` — the GT `IndoorConfig` schemas (191 total across 5 rooms),
+  authored by `src/author_gt_schemas.py` (in the external infinigen checkout). Captions under `captions/`.
+- `$SCAFFOLD/references/ext_indoor_<suffix>/*.png` — the reference photos (suffix: `bath`, `bedroom`,
   `living`, `kitchen`, `dining`). Used for GT authoring and eval contact sheets, **not** training.
-- `data_parquet/{train,val}.parquet` — the built dataset the trainer reads.
+- `$DATA_ROOT/{train,val}.parquet` — the built dataset the trainer reads (defaults to a gitignored
+  `data/`; set `$SCAFFOLD` and `$DATA_ROOT` in `config/paths.env`).
 
 ## Counts (merged policy)
 | room | train | val |

@@ -81,10 +81,10 @@ patches/infinigen/
   rl_inject.py              # the whole RL hook (new file in infinigen) — the heart of the integration
 docs/
   ARCHITECTURE.md DATA.md REWARD.md TRAINING.md INFERENCE.md INFINIGEN_PATCHES.md
-data_gt_schemas -> ...      # symlinks to the live data (not duplicated)
-data_references -> ...
-data_parquet    -> ...
 ```
+No data ships in this repo. GT schemas + reference photos live in the external infinigen
+checkout (`$SCAFFOLD`); the built train/val parquet is written to `$DATA_ROOT` (defaults to a
+gitignored `data/`). See `docs/DATA.md`.
 
 ## Quickstart
 

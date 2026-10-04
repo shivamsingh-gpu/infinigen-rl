@@ -7,3 +7,4 @@ tb/
 tb_samples/
 ckpts/
 *.parquet
+data/
